@@ -23,9 +23,7 @@ namespace MagicGradients.Tests.Mock
 
         public bool IsInvokeRequired { get; }
         public string RuntimePlatform { get; set; }
-
-        public OSAppTheme RequestedTheme => throw new NotImplementedException();
-
+       
         public MockPlatformServices(
             Action<Action> invokeOnMainThread = null, 
             Action<Uri> openUriAction = null,
@@ -201,16 +199,6 @@ namespace MagicGradients.Tests.Mock
             }
 
             return new SizeRequest(new Size(100, 20));
-        }
-
-        public string GetHash(string input)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Color GetNamedColor(string name)
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -6,7 +6,7 @@ using Xamarin.Forms;
 namespace MagicGradients
 {
     [ContentProperty(nameof(GradientSource))]
-    public class GradientView : SKCanvasView
+    public class GradientView : SKCanvasView, IGradientVisualElement
     {
         static GradientView()
         {
@@ -25,7 +25,28 @@ namespace MagicGradients
         static void OnGradientSourceChanged(BindableObject bindable, object oldValue, object newValue)
         {
             var gradientView = (GradientView)bindable;
+
+            if (oldValue != null)
+            {
+                ((GradientElement)oldValue).Parent = null;
+            }
+
+            if (newValue != null)
+            {
+                ((GradientElement)newValue).Parent = gradientView;
+            }
+
             gradientView.InvalidateSurface();
+        }
+
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+
+            if (GradientSource != null && GradientSource is BindableObject bindable)
+            {
+                SetInheritedBindingContext(bindable, BindingContext);
+            }
         }
 
         protected override void OnPaintSurface(SKPaintSurfaceEventArgs e)
@@ -44,10 +65,15 @@ namespace MagicGradients
 
                 foreach (var gradient in GradientSource.GetGradients())
                 {
-                    gradient.Measure();
+                    gradient.Measure(e.Info.Width, e.Info.Height);
                     gradient.Render(context);
                 }
             }
+        }
+
+        public void InvalidateCanvas()
+        {
+            InvalidateSurface();
         }
     }
 }

@@ -2,12 +2,14 @@
 using MagicGradients.Parser;
 using Playground.Data.Repositories;
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms;
 
 namespace Playground.ViewModels
 {
+
     [QueryProperty("Id", "id")]
     public class PasteCssViewModel : BaseViewModel
     {
@@ -39,8 +41,8 @@ namespace Playground.ViewModels
             }
         }
 
-        private IGradientSource _gradientSource;
-        public IGradientSource GradientSource
+        private GradientCollection _gradientSource;
+        public GradientCollection GradientSource
         {
             get => _gradientSource;
             set => SetProperty(ref _gradientSource, value, onChanged: ValidateEmptyData);
@@ -67,6 +69,7 @@ namespace Playground.ViewModels
         {
             _gradientRepository = gradientRepository;
 
+            GradientSource = new GradientCollection();
             RefreshCommand = new Command(UpdateGradientSource);
 
             UpdateGradientSource();
@@ -81,10 +84,7 @@ namespace Playground.ViewModels
                 var parser = new CssGradientParser();
                 var gradients = parser.ParseCss(CssCode);
 
-                GradientSource = new GradientCollection
-                {
-                    Gradients = gradients.ToList()
-                };
+                GradientSource.Gradients = new GradientElements<Gradient>(gradients);
             }
             catch (Exception e)
             {

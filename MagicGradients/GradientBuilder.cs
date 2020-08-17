@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Xamarin.Forms;
 
 namespace MagicGradients
@@ -6,59 +7,65 @@ namespace MagicGradients
     public class GradientBuilder
     {
         private readonly List<Gradient> _gradients = new List<Gradient>();
-        private Gradient _lastGradient;
+        private readonly List<GradientStop> _stops = new List<GradientStop>();
 
         public GradientBuilder AddLinearGradient(double angle, bool isRepeating = false)
         {
-            _lastGradient = new LinearGradient
+            AddCachedStopsToLast();
+
+            var linearGradient = new LinearGradient
             {
                 Angle = angle,
-                IsRepeating = isRepeating,
-                Stops = new List<GradientStop>()
+                IsRepeating = isRepeating
             };
 
-            _gradients.Add(_lastGradient);
+            _gradients.Add(linearGradient);
 
             return this;
         }
 
-        public GradientBuilder AddRadialGradient(Point center, RadialGradientShape shape, RadialGradientSize size, 
-            RadialGradientFlags flags = RadialGradientFlags.PositionProportional, bool isRepeating = false)
+        public GradientBuilder AddRadialGradient(
+            Point center, 
+            RadialGradientShape shape, 
+            RadialGradientSize size, 
+            RadialGradientFlags flags = RadialGradientFlags.PositionProportional, 
+            bool isRepeating = false)
         {
-            _lastGradient = new RadialGradient
+            AddCachedStopsToLast();
+
+            var radialGradient = new RadialGradient
             {
                 Center = center,
                 Shape = shape,
                 Size = size,
                 Flags = flags,
-                IsRepeating = isRepeating,
-                Stops = new List<GradientStop>()
+                IsRepeating = isRepeating
             };
 
-            _gradients.Add(_lastGradient);
+            _gradients.Add(radialGradient);
 
             return this;
         }
 
-        public GradientBuilder AddStop(Color color, float? offset = null)
+        public GradientBuilder AddStop(Color color, Offset? offset = null)
         {
-            if (_lastGradient == null)
-            {
-                AddLinearGradient(0);
-            }
-
             var stop = new GradientStop
             {
                 Color = color,
-                Offset = offset ?? -1
+                Offset = offset ?? Offset.Empty
             };
 
-            _lastGradient.Stops.Add(stop);
+            _stops.Add(stop);
 
             return this;
         }
 
-        public GradientBuilder AddStops(Color color, IEnumerable<float> offsets)
+        public GradientBuilder AddStop(Color color, double offset)
+        {
+            return AddStop(color, Offset.Prop(offset));
+        }
+
+        public GradientBuilder AddStops(Color color, IEnumerable<Offset> offsets)
         {
             foreach (var offset in offsets)
             {
@@ -68,8 +75,41 @@ namespace MagicGradients
             return this;
         }
 
+        public GradientBuilder AddStops(Color color, IEnumerable<double> offsets)
+        {
+            foreach (var offset in offsets)
+            {
+                AddStop(color, offset);
+            }
+
+            return this;
+        }
+
+        private void AddCachedStopsToLast()
+        {
+            if (!_stops.Any())
+                return;
+
+            var lastGradient = _gradients.LastOrDefault();
+            if (lastGradient == null)
+            {
+                lastGradient = CreateDefaultGradient();
+                _gradients.Add(lastGradient);
+            }
+            lastGradient.Stops = new GradientElements<GradientStop>(_stops);
+
+            _stops.Clear();
+        }
+
+        private Gradient CreateDefaultGradient() => new LinearGradient
+        {
+            Angle = 0,
+            IsRepeating = false
+        };
+
         public Gradient[] Build()
         {
+            AddCachedStopsToLast();
             return _gradients.ToArray();
         }
     }

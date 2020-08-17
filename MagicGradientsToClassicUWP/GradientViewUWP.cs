@@ -53,7 +53,7 @@ namespace MagicGradients
 
                 foreach (var gradient in GradientSource.GetGradients())
                 {
-                    gradient.Measure();
+                    gradient.Measure(e.Info.Width, e.Info.Height);
                     gradient.Render(context);
                 }
             }

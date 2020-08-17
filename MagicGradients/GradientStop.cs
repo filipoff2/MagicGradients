@@ -2,7 +2,7 @@
 
 namespace MagicGradients
 {
-    public class GradientStop : BindableObject
+    public class GradientStop : GradientElement
     {
         public static readonly BindableProperty ColorProperty = BindableProperty.Create(
             nameof(Color), typeof(Color), typeof(GradientStop), Color.White);
@@ -14,13 +14,15 @@ namespace MagicGradients
         }
 
         public static readonly BindableProperty OffsetProperty = BindableProperty.Create(
-            nameof(Offset), typeof(float), typeof(GradientStop), -1f);
+            nameof(Offset), typeof(Offset), typeof(GradientStop), Offset.Empty);
 
-        public float Offset
+        public Offset Offset
         {
-            get => (float)GetValue(OffsetProperty);
+            get => (Offset)GetValue(OffsetProperty);
             set => SetValue(OffsetProperty, value);
         }
+
+        public float RenderOffset { get; set; } = -1f;
 
         public override string ToString()
         {

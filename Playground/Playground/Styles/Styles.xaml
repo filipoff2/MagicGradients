@@ -18,7 +18,6 @@
         <Setter Property="Shell.TabBarTitleColor" Value="White"/>
     </Style>
     <Style TargetType="ShellItem" BasedOn="{StaticResource BaseStyle}" />   
-        <On Platform="UWP" Value="Assets/icomoon.ttf#icomoon" />
     <Style x:Key="FontLabel" TargetType="Label">
         <Setter Property="HorizontalTextAlignment" Value="Center" />
         <Setter Property="VerticalTextAlignment" Value="Center" />

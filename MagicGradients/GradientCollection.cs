@@ -4,10 +4,31 @@ using Xamarin.Forms;
 namespace MagicGradients
 {
     [ContentProperty(nameof(Gradients))]
-    public class GradientCollection : BindableObject, IGradientSource
+    public class GradientCollection : GradientElement, IGradientSource
     {
-        public IList<Gradient> Gradients { get; set; } = new List<Gradient>();
+        private GradientElements<Gradient> _gradients;
+        public GradientElements<Gradient> Gradients
+        {
+            get => _gradients;
+            set
+            {
+                _gradients?.Release();
+                _gradients = value;
+                _gradients.AttachTo(this);
+            }
+        }
+
+        public GradientCollection()
+        {
+            Gradients = new GradientElements<Gradient>();
+        }
 
         public IEnumerable<Gradient> GetGradients() => Gradients;
+
+        protected override void OnBindingContextChanged()
+        {
+            base.OnBindingContextChanged();
+            Gradients.SetInheritedBindingContext(BindingContext);
+        }
     }
 }

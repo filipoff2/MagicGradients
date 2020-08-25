@@ -1,4 +1,5 @@
-﻿using MagicGradients.Renderers;
+﻿using System;
+using MagicGradients.Renderers;
 using Xamarin.Forms;
 
 namespace MagicGradients
@@ -23,12 +24,21 @@ namespace MagicGradients
 
         public override void Render(RenderContext context)
         {
+#if DEBUG_RENDER
+            System.Diagnostics.Debug.WriteLine($"Rendering Linear Gradient with {Stops.Count} stops");
+#endif
             _renderer.Render(context);
         }
 
-        public override string ToString()
+        protected override double CalculateRenderOffset(double offset, int width, int height)
         {
-            return $"Angle={Angle}, Stops=LinearGradientStop[{Stops.Count}]";
+            // Here the Pythagorean Theorem + Trigonometry is applied
+            // to figure out the length of the gradient, which is needed to accurately calculate offset.
+            // https://en.wikibooks.org/wiki/Trigonometry/The_Pythagorean_Theorem
+            var angleRad = GradientMath.ToRadians(Angle);
+            var computedLength = Math.Sqrt(Math.Pow(width * Math.Cos(angleRad), 2) + Math.Pow(height * Math.Sin(angleRad), 2));
+
+            return computedLength != 0 ? offset / computedLength : 1;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace MagicGradients
         private readonly RadialGradientRenderer _renderer;
 
         public static readonly BindableProperty CenterProperty = BindableProperty.Create(
-            nameof(Center), typeof(Point), typeof(RadialGradient), default(Point));
+            nameof(Center), typeof(Point), typeof(RadialGradient), new Point(0.5, 0.5));
 
         public Point Center
         {
@@ -17,20 +17,20 @@ namespace MagicGradients
         }
 
         public static readonly BindableProperty RadiusXProperty = BindableProperty.Create(
-            nameof(RadiusXProperty), typeof(float), typeof(RadialGradient), -1f);
+            nameof(RadiusXProperty), typeof(double), typeof(RadialGradient), -1d);
 
-        public float RadiusX
+        public double RadiusX
         {
-            get => (float)GetValue(RadiusXProperty);
+            get => (double)GetValue(RadiusXProperty);
             set => SetValue(RadiusXProperty, value);
         }
 
         public static readonly BindableProperty RadiusYProperty = BindableProperty.Create(
-            nameof(RadiusYProperty), typeof(float), typeof(RadialGradient), -1f);
+            nameof(RadiusYProperty), typeof(double), typeof(RadialGradient), -1d);
 
-        public float RadiusY
+        public double RadiusY
         {
-            get => (float)GetValue(RadiusYProperty);
+            get => (double)GetValue(RadiusYProperty);
             set => SetValue(RadiusYProperty, value);
         }
 
@@ -68,7 +68,15 @@ namespace MagicGradients
 
         public override void Render(RenderContext context)
         {
+#if DEBUG_RENDER
+            System.Diagnostics.Debug.WriteLine($"Rendering Radial Gradient with {Stops.Count} stops");
+#endif
             _renderer.Render(context);
+        }
+
+        protected override double CalculateRenderOffset(double offset, int width, int height)
+        {
+            return offset;
         }
     }
 }

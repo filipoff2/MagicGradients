@@ -1,14 +1,6 @@
 {
-  "version": 1,
-  "namespace": "Playground.Data.Resources",
+  "date": "2020-08-07T14:25:59",
+  "nameSpace": "Playground.Data.Resources",
   "categories": "Categories.json",
-  "themes": "Themes.json",
-  "gradients": [
-    "Angular.json",
-    "Burst.json",
-    "Checkered.json",
-    "Retro.json",
-    "Standard.json",
-    "Stripes.json"
-  ]
+  "themes": "Themes.json"
 }
